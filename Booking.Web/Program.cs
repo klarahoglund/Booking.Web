@@ -1,5 +1,5 @@
 using Booking.Core.Entities;
-using Booking.Web.Data;
+using Booking.Data.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,7 +41,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=GymClasses}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();
