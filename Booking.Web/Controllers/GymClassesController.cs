@@ -34,6 +34,12 @@ namespace Booking.Web.Controllers
                         View(await _context.GymClasses.ToListAsync());
                          
         }
+        public async Task<IActionResult> Index2()
+        {
+            return
+                        View(await _context.GymClasses.ToListAsync());
+
+        }
 
 
         [Authorize]
