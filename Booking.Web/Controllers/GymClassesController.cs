@@ -9,24 +9,66 @@ using Booking.Core.Entities;
 using Booking.Data.Data;
 using Booking.Web.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace Booking.Web.Controllers
 {
     public class GymClassesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public GymClassesController(ApplicationDbContext context)
+        public GymClassesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            this.userManager = userManager;
+          ;
         }
 
         // GET: GymClasses
         public async Task<IActionResult> Index()
         {
-              return _context.GymClasses != null ? 
-                          View(await _context.GymClasses.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.GymClasses'  is null.");
+            return
+                        View(await _context.GymClasses.ToListAsync());
+                         
+        }
+
+
+        [Authorize]
+        public async Task<IActionResult> Book(int ? classId)
+        {
+            if (classId == null) return BadRequest();
+
+        
+           var userId = userManager.GetUserId(User);
+
+            if (userId == null) return BadRequest();
+
+            var attending = await _context.ConnectionTableUserGyms.FindAsync(userId, classId);
+
+
+            if(attending == null)
+            {
+                var booking = new ApplicationUserGymClass
+                {
+                    ApplicationUserId = userId,
+                    GymClassId = (int) classId
+                };
+                _context.ConnectionTableUserGyms.Add(booking);
+            }
+            else
+            {
+                _context.ConnectionTableUserGyms.Remove(attending);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+            //var myGymClass = await _context.GymClasses.Include(u => u.ApplicationUserGymClasses)
+            //    .FirstOrDefaultAsync(a => a.Id == classId);
+
+            //var attending = myGymClass?.ApplicationUserGymClasses.FirstOrDefault(c => c.ApplicationUserId == userId);
+            // var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         // GET: GymClasses/Details/5
