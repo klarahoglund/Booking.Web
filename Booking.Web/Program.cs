@@ -1,5 +1,6 @@
 using Booking.Core.Entities;
 using Booking.Data.Data;
+using Booking.Web.Extentions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 3;
 })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
