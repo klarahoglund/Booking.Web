@@ -8,7 +8,7 @@ namespace Booking.Core.Entities
 {
    public class ApplicationUserGymClass
     {
-        public string ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; } = String.Empty;
         public int GymClassId { get; set; }
 
         public GymClass GymClass { get; set; }

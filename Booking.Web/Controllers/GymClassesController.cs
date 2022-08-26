@@ -43,16 +43,16 @@ namespace Booking.Web.Controllers
 
 
         [Authorize]
-        public async Task<IActionResult> Book(int ? classId)
+        public async Task<IActionResult> Book(int ? id)
         {
-            if (classId == null) return BadRequest();
+            if (id == null) return NotFound(); //GymClassId
 
-        
-           var userId = userManager.GetUserId(User);
+         //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+          var userId =  userManager.GetUserId(User);
 
             if (userId == null) return BadRequest();
 
-            var attending = await _context.ConnectionTableUserGyms.FindAsync(userId, classId);
+            var attending = await _context.ConnectionTableUserGyms.FindAsync(userId, id);
 
 
             if(attending == null)
@@ -60,7 +60,7 @@ namespace Booking.Web.Controllers
                 var booking = new ApplicationUserGymClass
                 {
                     ApplicationUserId = userId,
-                    GymClassId = (int) classId
+                    GymClassId = (int) id
                 };
                 _context.ConnectionTableUserGyms.Add(booking);
             }
@@ -69,12 +69,8 @@ namespace Booking.Web.Controllers
                 _context.ConnectionTableUserGyms.Remove(attending);
             }
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
-            //var myGymClass = await _context.GymClasses.Include(u => u.ApplicationUserGymClasses)
-            //    .FirstOrDefaultAsync(a => a.Id == classId);
-
-            //var attending = myGymClass?.ApplicationUserGymClasses.FirstOrDefault(c => c.ApplicationUserId == userId);
-            // var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return RedirectToAction(nameof(Index));
+          
         }
 
         // GET: GymClasses/Details/5

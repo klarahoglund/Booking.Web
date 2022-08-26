@@ -4,18 +4,16 @@ using Booking.Data.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Booking.Web.Data.Migrations
+namespace Booking.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220823144838_init")]
-    partial class init
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,17 +89,17 @@ namespace Booking.Web.Data.Migrations
 
             modelBuilder.Entity("Booking.Core.Entities.ApplicationUserGymClass", b =>
                 {
-                    b.Property<int>("GymClassId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("GymClassId", "ApplicationUserId");
+                    b.Property<int>("GymClassId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasKey("ApplicationUserId", "GymClassId");
 
-                    b.ToTable("ApplicationUserGymClass");
+                    b.HasIndex("GymClassId");
+
+                    b.ToTable("ConnectionTableUserGyms");
                 });
 
             modelBuilder.Entity("Booking.Core.Entities.GymClass", b =>
