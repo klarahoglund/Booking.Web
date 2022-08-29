@@ -16,7 +16,7 @@ namespace Booking.Data
         private static ApplicationDbContext db = default!;
         private static RoleManager<IdentityRole> roleManager= default!;
         private static UserManager<ApplicationUser> userManager = default!;
-        public static async Task InitAsync(ApplicationDbContext context, IServiceProvider service)
+        public static async Task InitAsync(ApplicationDbContext context, IServiceProvider service, string adminPW)
         {
             if (context is null ) throw new ArgumentNullException(nameof(context));
             db = context;
@@ -24,7 +24,7 @@ namespace Booking.Data
 
             if (service is null) throw new ArgumentNullException(nameof(service));
             
-            if (db.GymClasses.Any()) return;
+            //if (db.GymClasses.Any()) return;
 
             roleManager = service.GetRequiredService<RoleManager<IdentityRole>>();
             if (roleManager is null) throw new ArgumentNullException(nameof(roleManager));
@@ -32,8 +32,9 @@ namespace Booking.Data
            userManager = service.GetRequiredService<UserManager<ApplicationUser>>();
             if (userManager is null) throw new ArgumentNullException(nameof(userManager));
 
+
             var roleNames = new[]{ "Member", "Admin"};
-            var adminEmail = "admin@gym,se";
+            var adminEmail = "admin@gym.se";
 
             //Gympass
            var gymClasses = GetGymClasses();
@@ -41,11 +42,50 @@ namespace Booking.Data
 
             await AddRoleAsync(roleNames);
 
+             var admin = await AddAdminAsync(adminEmail, adminPW);
+            await AddToRolesAsync(admin, roleNames);
 
+        }
+
+        private static async Task AddToRolesAsync(ApplicationUser admin, string[] roleNames)
+        {
+
+            foreach (var role in roleNames)
+            {
+                if (await userManager.IsInRoleAsync(admin, role)) continue;
+                var result = await userManager.AddToRoleAsync(admin, role);
+                if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+            }
+          }
+
+        private static async Task <ApplicationUser> AddAdminAsync(string adminEmail, string adminPW)
+        {
+           // if (await userManager.FindByEmailAsync(adminEmail) != null) return null;
+
+            var admin = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail
+            };
+            
+           var result = await userManager.CreateAsync(admin, adminPW);
+            if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+
+            return admin;
         }
 
         private static async Task AddRoleAsync(string[] roleNames)
         {
+
+            foreach(var roleName in roleNames)
+            {
+                if (await roleManager.RoleExistsAsync(roleName)) continue;
+                var role = new IdentityRole { Name = roleName };
+                var result = await roleManager.CreateAsync(role);
+
+                if(!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+
+            }
             
         }
 
