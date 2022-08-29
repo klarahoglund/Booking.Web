@@ -30,8 +30,16 @@ namespace Booking.Web.Controllers
         // GET: GymClasses
         public async Task<IActionResult> Index()
         {
-            return
-                        View(await _context.GymClasses.ToListAsync());
+            if (User.IsInRole("Admin"))
+            {
+               return  View(await _context.GymClasses.ToListAsync());
+               
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index3));
+
+            }
                          
         }
         public async Task<IActionResult> Index2()
@@ -40,6 +48,13 @@ namespace Booking.Web.Controllers
                         View(await _context.GymClasses.ToListAsync());
 
         }
+        public async Task<IActionResult> Index3()
+        {
+            return
+                        View(await _context.GymClasses.ToListAsync());
+
+        }
+
 
 
         [Authorize]

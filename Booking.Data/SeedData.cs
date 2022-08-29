@@ -24,7 +24,7 @@ namespace Booking.Data
 
             if (service is null) throw new ArgumentNullException(nameof(service));
             
-            //if (db.GymClasses.Any()) return;
+            if (db.GymClasses.Any()) return;
 
             roleManager = service.GetRequiredService<RoleManager<IdentityRole>>();
             if (roleManager is null) throw new ArgumentNullException(nameof(roleManager));
