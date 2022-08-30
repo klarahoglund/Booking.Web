@@ -10,7 +10,7 @@
                 throw new ArgumentNullException(nameof(request));
             }
 
-            return request.Headers["X-Request-With"] == "XMLHttpRequest";
+            return request.Headers["X-Requested-With"] == "XMLHttpRequest";
         }
     }
 }
